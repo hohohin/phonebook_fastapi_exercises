@@ -1,0 +1,7 @@
+.env
+.env.pub
+.venv/
+backend/phonebook/__pycache__/
+backend/phonebook/models/__pycache__/
+.env
+test.rest

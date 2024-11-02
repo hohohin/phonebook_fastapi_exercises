@@ -1,23 +1,30 @@
 from fastapi import FastAPI, HTTPException
 from uuid import UUID
-from models.contact_base import Contact, Update_contact
+# from models.contact_base import Contact, Update_contact
+from fastapi.middleware.cors import CORSMiddleware
 
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
+from pydantic import BaseModel, Field
+from uuid import UUID
 
-uri = "mongodb+srv://admin:admin@hins.fdmah.mongodb.net/?retryWrites=true&w=majority&appName=hins"
+class Contact(BaseModel):
+    id: UUID
+    name : str = Field(min_length=1,max_length=10)
+    number: str = Field(min_length=1,max_length=10)
 
-# Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'))
+class Update_contact(BaseModel):
+    name : str | None = Field(min_length=1,max_length=10)
+    number : str | None = Field(min_length=1,max_length=10)
 
-# Send a ping to confirm a successful connection
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 在生产环境中应该指定具体的域名
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 contacts = []
 
