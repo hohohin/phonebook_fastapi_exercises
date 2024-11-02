@@ -28,6 +28,10 @@ app.add_middleware(
 
 contacts = []
 
+@app.get("/health")
+def check_health():
+    return "status healthy"
+
 @app.get("/")
 def get_all_contacts():
     return contacts
