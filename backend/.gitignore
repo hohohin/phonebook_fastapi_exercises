@@ -1,0 +1,5 @@
+.venv/
+phonebook/__pycache__/
+phonebook/models/__pycache__/
+.env
+test.rest
