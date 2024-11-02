@@ -31,6 +31,10 @@ app.add_middleware(
 
 contacts = []
 
+@app.get("/")
+async def read_root():
+    return {"Hello": "World"}
+
 @app.get("/health")
 def check_health():
     return "status healthy"
@@ -67,14 +71,3 @@ def delete_contact(id:UUID):
         
     raise HTTPException(status_code=404, detail="contact not found")
 
-
-if __name__ == "__main__":
-    # 使用环境变量获取端口，如果没有则默认使用 8000
-    port = int(os.getenv("PORT", 8000))
-    
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",  # 重要：使用 0.0.0.0 而不是 localhost
-        port=port,
-        reload=False  # 生产环境设置为 False
-    )
