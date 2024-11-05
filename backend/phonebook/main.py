@@ -1,13 +1,19 @@
 from fastapi import FastAPI, HTTPException
 from uuid import UUID
-import os
-import uvicorn
+import logging
 
 # from models.contact_base import Contact, Update_contact
 from fastapi.middleware.cors import CORSMiddleware
 
 from pydantic import BaseModel, Field
 from uuid import UUID
+
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 class Contact(BaseModel):
     id: UUID
@@ -23,7 +29,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # 在生产环境中应该指定具体的域名
+    allow_origins=["*"],  # 在生产环境中应该指定具体的域名
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
