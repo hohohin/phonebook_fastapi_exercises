@@ -31,7 +31,7 @@ app.add_middleware(
 
 contacts = []
 
-@app.get("/")
+@app.get("/api")
 async def read_root():
     return {"Hello": "World"}
 
@@ -39,16 +39,16 @@ async def read_root():
 def check_health():
     return "status healthy"
 
-@app.get("/")
+@app.get("/api/contacts")
 def get_all_contacts():
     return contacts
 
-@app.post("/")
+@app.post("/api/contacts")
 def create_contact(contact: Contact):
     contacts.append(contact)
     return "contact added"
 
-@app.put("/{id}")
+@app.put("/api/contacts/{id}")
 def update_contact(id:UUID,contact:Update_contact):
     i = 0
     for pre_contact in contacts:
@@ -62,7 +62,7 @@ def update_contact(id:UUID,contact:Update_contact):
 
     raise HTTPException(status_code=404, detail="person not found")
 
-@app.delete("/{id}")
+@app.delete("/api/contacts/{id}")
 def delete_contact(id:UUID):
     for contact in contacts:
         if contact.id == id:
