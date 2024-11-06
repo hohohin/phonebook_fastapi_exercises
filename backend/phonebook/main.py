@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from uuid import UUID
+from uuid import UUID, uuid4
 import logging
 
 # from models.contact_base import Contact, Update_contact
@@ -15,10 +15,12 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-class Contact(BaseModel):
-    id: UUID
+class Create_contact(BaseModel):
     name : str = Field(min_length=1,max_length=10)
     number: str = Field(min_length=1,max_length=10)
+
+class Contact(Create_contact):
+    id : UUID
 
 class Update_contact(BaseModel):
     name : str | None = Field(min_length=1,max_length=10)
@@ -43,10 +45,6 @@ contacts = [
     }
 ]
 
-@app.get("/api")
-async def read_root():
-    return {"Hello": "World"}
-
 @app.get("/health")
 def check_health():
     return "status healthy"
@@ -55,8 +53,21 @@ def check_health():
 def get_all_contacts():
     return contacts
 
+@app.get("/api/contacts/{id}")
+def get_the_contact(id):
+    for contact in contacts:
+        if contact["id"] == id:
+            return contact
+        raise HTTPException(status_code=404, detail="contact not found")
+
 @app.post("/api/contacts")
-def create_contact(contact: Contact):
+def create_contact(contact: Create_contact):
+    id_gen = uuid4()
+    contact = {
+        "id":id_gen,
+        "name":contact.name,
+        "number": contact.number
+    }
     contacts.append(contact)
     return "contact added"
 
@@ -65,11 +76,11 @@ def update_contact(id:UUID,contact:Update_contact):
     i = 0
     for pre_contact in contacts:
         i += 1
-        if pre_contact.id == id:
+        if pre_contact["id"] == id:
             if contact.name is not None:
-                contacts[i-1].name = contact.name
+                contacts[i-1]["name"] = contact.name
             if contact.number is not None:
-                contacts[i-1].number = contact.number
+                contacts[i-1]["number"] = contact.number
             return contacts[i-1]
 
     raise HTTPException(status_code=404, detail="person not found")
@@ -77,9 +88,9 @@ def update_contact(id:UUID,contact:Update_contact):
 @app.delete("/api/contacts/{id}")
 def delete_contact(id:UUID):
     for contact in contacts:
-        if contact.id == id:
+        if contact["id"] == id:
             contacts.remove(contact)
-            return f"contact:{contact.name} deleted"
+            return f"contact:{contact["name"]} deleted"
         
     raise HTTPException(status_code=404, detail="contact not found")
 
