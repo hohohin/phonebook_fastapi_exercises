@@ -93,7 +93,7 @@ def delete_contact(id:UUID):
     for contact in contacts:
         if contact["id"] == id:
             contacts.remove(contact)
-            return f"contact:{contact["name"]} deleted"
+            return f"contact:{contact['name']} deleted"
         
     raise HTTPException(status_code=404, detail="contact not found")
 
