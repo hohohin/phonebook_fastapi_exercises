@@ -15,10 +15,12 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# 创建用户时不应该需要用户输入 id，不然前端会很懵
 class Create_contact(BaseModel):
     name : str = Field(min_length=1,max_length=10)
     number: str = Field(min_length=1,max_length=10)
 
+# 所以完整的用户的最佳实践通常采用这种方式（ id 单独做，继承自创建）
 class Contact(Create_contact):
     id : UUID
 
@@ -39,7 +41,7 @@ app.add_middleware(
 
 contacts = [
     {
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "id": uuid4(),
     "name": "string",
     "number": "string"
     }
@@ -56,6 +58,7 @@ def get_all_contacts():
 @app.get("/api/contacts/{id}")
 def get_the_contact(id):
     for contact in contacts:
+        #访问字典里的键，用的是这种方式。而不是访问对象属性的方式。
         if contact["id"] == id:
             return contact
         raise HTTPException(status_code=404, detail="contact not found")
